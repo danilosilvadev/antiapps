@@ -12,12 +12,12 @@
   }
   $("f").addEventListener("input", () => { if (!started) { started = true; ev("form_start"); } });
   const say = (text, ok) => { const m = $("msg"); m.textContent = text; m.className = `msg ${ok ? "ok" : "err"}`; m.style.display = "block"; };
-  const friendly = { 404: "The free trial opens soon. Check back in a few days.", 409: "A free trial was already used for this email or business.", 429: "Too many requests from your network today. Try again tomorrow." };
+  const friendly = { 404: "The free trial opens soon. Check back in a few days.", 409: "A free trial was already used for this email or link.", 429: "Too many requests from your network today. Try again tomorrow." };
   $("f").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const v = Object.fromEntries(["email", "business", "url", "description", "location"].map((k) => [k, $(k).value.trim()]));
+    const v = { email: $("email").value.trim(), link: $("link").value.trim() };
     if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(v.email)) return say("Please enter a valid email.");
-    if (!v.business || (!v.url && !v.description)) return say("Add your business name and a website or a short description.");
+    if (!/^(https?:\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(v.link)) return say("Paste your website or a social profile link.");
     if (!API) return say(friendly[404]);
     if (SITEKEY && !tsToken) return say("Please complete the check above.");
     $("go").disabled = true;
